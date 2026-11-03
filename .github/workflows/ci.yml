@@ -1,0 +1,34 @@
+# Vérifie automatiquement le projet React après chaque push.
+name: Tests React
+
+on:
+  push: # Le workflow se lance à chaque push, quelle que soit la branche.
+
+# Le workflow a seulement besoin de lire le contenu du dépôt.
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    # GitHub fournit une machine Linux temporaire pour exécuter les étapes.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Récupère les fichiers du dépôt sur la machine d'exécution.
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      # Installe Node.js 22 et active la mise en cache des dépendances npm.
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Installe les dépendances définies dans package-lock.json.
+      - name: Installer les dépendances
+        run: npm ci
+
+      # Lance les tests en mode non interactif, adapté à la CI.
+      - name: Lancer les tests
+        run: npm test -- --run
